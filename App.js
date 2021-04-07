@@ -15,6 +15,7 @@ import {
   StyleSheet,
   useColorScheme,
   Easing,
+  Text,
 } from 'react-native';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 
@@ -24,11 +25,22 @@ import HomeScreen from './screens/Home';
 
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
+import {persistStore, persistReducer} from 'redux-persist';
 
 import combineReducers from './store/reducers/TodoReducer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {PersistGate} from 'redux-persist/integration/react';
+
+const persistConfig = {
+  key: 'root',
+  storage: AsyncStorage,
+};
 
 const Stack = createStackNavigator();
-const store = createStore(combineReducers);
+
+const persistedReducer = persistReducer(persistConfig, combineReducers);
+const store = createStore(persistedReducer);
+const persistor = persistStore(store);
 
 const App = () => {
   // const isDarkMode = useColorScheme() === 'dark';
@@ -52,27 +64,27 @@ const App = () => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <StatusBar
-      // barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-      />
+      <StatusBar barStyle={'light-content'} />
       <Provider store={store}>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="Onboarding"
-            screenOptions={{
-              headerShown: false,
-              ...TransitionPresets.SlideFromRightIOS,
-              transitionSpec: {
-                open: openConfig,
-                close: closeConfig,
-              },
-            }}
-            headerMode="float"
-            animation="fade">
-            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-            <Stack.Screen name="Home" component={HomeScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <PersistGate loading={null} persistor={persistor}>
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName="Onboarding"
+              screenOptions={{
+                headerShown: false,
+                ...TransitionPresets.SlideFromRightIOS,
+                transitionSpec: {
+                  open: openConfig,
+                  close: closeConfig,
+                },
+              }}
+              headerMode="float"
+              animation="fade">
+              <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+              <Stack.Screen name="Home" component={HomeScreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </PersistGate>
       </Provider>
     </SafeAreaView>
   );

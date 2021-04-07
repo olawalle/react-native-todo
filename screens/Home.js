@@ -76,7 +76,7 @@ const HomeScreen = props => {
         <Text style={styles.heading}>Tasks</Text>
 
         {pendingTodos.length ? (
-          pendingTodos.map(todo => <Todo todo={todo} />)
+          pendingTodos.map(todo => <Todo key={todo.id} todo={todo} />)
         ) : (
           <Text style={{marginBottom: 30, marginTop: -12, color: colors.grey5}}>
             No pending {pickedTag !== 'My day' ? pickedTag : ''} tasks
@@ -86,7 +86,7 @@ const HomeScreen = props => {
         <Text style={{...styles.heading, marginTop: 20}}>Completed</Text>
 
         {finishedTodos.length ? (
-          finishedTodos.map(todo => <Todo todo={todo} />)
+          finishedTodos.map(todo => <Todo key={todo.id} todo={todo} />)
         ) : (
           <Text style={{marginBottom: 30, marginTop: -12, color: colors.grey5}}>
             No completed {pickedTag !== 'My day' ? pickedTag : ''} tasks
